@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: C:\\Users\\evan.gu\\Documents\\Eclipse Workspace\\OpenCV Library - 2.4.11\\src\\org\\opencv\\engine\\OpenCVEngineInterface.aidl
+ * Original file: C:\\Users\\evan.gu\\Documents\\GitHub\\PanoDemo\\OpenCV Library - 2.4.11\\src\\org\\opencv\\engine\\OpenCVEngineInterface.aidl
  */
 package org.opencv.engine;
 /**
