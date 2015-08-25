@@ -1,10 +1,8 @@
-![](./images/skyworth.jpg)
-
 # PanoDemo
 
 ## An Android Panorama demo for DJI Inspire1 and Phantom 3 Professional using DJI SDK and OpenCV
 
-![](./images/ui-running.png)
+![](./images/skyworth.jpg)
 
 ### Develop environment:
 jdk 8u45 + eclipse mars + ADT 23.0.6 + ndk r10e + cdt8.7.0 + cygwin2.1.0 + OpenCV2.4.11 + DJI SDK 2.1.0
@@ -30,6 +28,10 @@ jdk 8u45 + eclipse mars + ADT 23.0.6 + ndk r10e + cdt8.7.0 + cygwin2.1.0 + OpenC
 3.Finish,wait projects build complete,check EvanPano's Library:
 
 ![](./images/check-lib.png)
+
+4.Run APP:
+
+![](./images/ui-running.png)
 
 ### Download images from DJI drone diagram:
 
