@@ -1114,7 +1114,8 @@ public class MainActivity extends Activity implements OnClickListener {
             case HANDLER_SET_DJI_CAMERA_DOWNLOAD_SELECTED:
             {
                 //download file
-                DJIDrone.getDjiCamera().downloadAllSelectedFiles(DOWNLOAD_IMAGE_DIRECTORY,new DJIFileDownloadCallBack()
+            	File downloadPath=new File(DOWNLOAD_IMAGE_DIRECTORY);
+                DJIDrone.getDjiCamera().downloadAllSelectedFiles(downloadPath,new DJIFileDownloadCallBack()
                 {
                     @Override
                     public void OnStart()
