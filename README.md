@@ -2,10 +2,14 @@
 
 ## An Android Panorama demo for DJI Inspire1 and Phantom 3 Professional using DJI SDK and OpenCV
 
+For Inspire1:rotate gimabl yaw
+
+For Phantom 3 Professional:rotate drone body yaw,we have joystick example and waypoint action example 
+
 ![](./images/skyworth.jpg)
 
 ### Develop environment:
-jdk 8u45 + eclipse mars + ADT 23.0.6 + ndk r10e + cdt8.7.0 + cygwin2.1.0 + OpenCV2.4.11 + DJI SDK 2.1.0
+jdk 8u45 + eclipse mars + ADT 23.0.6 + ndk r10e + cdt8.7.0 + cygwin2.1.0 + OpenCV2.4.11 + DJI SDK 2.3.0
 
 ### Necessary software installing and configuring guides:
 1.jdk: [http://www.ntu.edu.sg/home/ehchua/programming/howto/JDK_Howto.html]()

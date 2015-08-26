@@ -17,7 +17,7 @@
  5. [Eclipse C/C++ Development Tooling](http://eclipse.org/cdt/) (cdt8.7.0)  参照这个教程完成配置: http://www.ibm.com/developerworks/opensource/library/os-ecc/?S_TACT=105AGX44&S_CMP=ART
  6. [Cygwin](http://www.cygwin.com) (cygwin2.1.0)相关教程: http://mindtherobot.com/blog/452/android-beginners-ndk-setup-step-by-step/
  7. [OpenCV](http://opencv.org) (OpenCV2.4.11) 下载 "OpenCV for Android"
- 8. [DJI Software Development Kit](http://dev.dji.com) (DJI SDK 2.1.0)
+ 8. [DJI Software Development Kit](http://dev.dji.com) (DJI SDK 2.3.0)
 
 ### 导入工程到Eclipse
 

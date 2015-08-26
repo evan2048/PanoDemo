@@ -17,7 +17,7 @@ There are 8 separate required downloads to set up our development environment. F
  5. [Eclipse C/C++ Development Tooling](http://eclipse.org/cdt/) (cdt8.7.0)  Follow the "Installing and running the CDT" segment of this tutorial for further guidance: http://www.ibm.com/developerworks/opensource/library/os-ecc/?S_TACT=105AGX44&S_CMP=ART
  6. [Cygwin](http://www.cygwin.com) (cygwin2.1.0)Follow the "Installing Cygwin" segment of this tutorial for further guidance: http://mindtherobot.com/blog/452/android-beginners-ndk-setup-step-by-step/
  7. [OpenCV](http://opencv.org) (OpenCV2.4.11) Make sure to download "OpenCV for Android"
- 8. [DJI Software Development Kit](http://dev.dji.com) (DJI SDK 2.1.0)
+ 8. [DJI Software Development Kit](http://dev.dji.com) (DJI SDK 2.3.0)
 
 ### Importing the Demo Project into Eclipse
 

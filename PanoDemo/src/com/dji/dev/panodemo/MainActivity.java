@@ -1,6 +1,6 @@
 /*
- * An Android Panorama demo for DJI Inspire1 and Phantom 3 Professional using DJI SDK and OpenCV Lib
- * Develop environment:jdk 8u45 + eclipse mars + ADT 23.0.6 + ndk r10e + cdt8.7.0 + cygwin2.1.0 + OpenCV2.4.11 + DJI SDK 2.1.0
+ * An Android Panorama demo for DJI Inspire1 and Phantom 3 Professional using DJI SDK and OpenCV
+ * Develop environment:jdk 8u45 + eclipse mars + ADT 23.0.6 + ndk r10e + cdt8.7.0 + cygwin2.1.0 + OpenCV2.4.11 + DJI SDK 2.3.0
  */
 
 package com.dji.dev.panodemo;
@@ -43,8 +43,16 @@ import dji.sdk.api.DJIDroneTypeDef.DJIDroneType;
 import dji.sdk.api.Gimbal.DJIGimbalAttitude;
 import dji.sdk.api.Gimbal.DJIGimbalCapacity;
 import dji.sdk.api.Gimbal.DJIGimbalRotation;
+import dji.sdk.api.GroundStation.DJIGroundStationExecutionPushInfo;
+import dji.sdk.api.GroundStation.DJIGroundStationTask;
+import dji.sdk.api.GroundStation.DJIGroundStationWaypoint;
+import dji.sdk.api.GroundStation.DJIGroundStationTypeDef.DJIGroundStationFinishAction;
+import dji.sdk.api.GroundStation.DJIGroundStationTypeDef.DJINavigationFlightControlCoordinateSystem;
 import dji.sdk.api.GroundStation.DJIGroundStationTypeDef.DJINavigationFlightControlYawControlMode;
+import dji.sdk.api.GroundStation.DJIGroundStationTypeDef.GroundStationExecutionPushType;
+import dji.sdk.api.GroundStation.DJIGroundStationTypeDef.GroundStationOnWayPointAction;
 import dji.sdk.api.GroundStation.DJIGroundStationTypeDef.GroundStationResult;
+import dji.sdk.api.MainController.DJIMainControllerSystemState;
 import dji.sdk.api.DJIError;
 import dji.sdk.api.Battery.DJIBatteryProperty;
 import dji.sdk.api.Camera.DJICameraPlaybackState;
@@ -58,11 +66,21 @@ import dji.sdk.interfaces.DJIGerneralListener;
 import dji.sdk.interfaces.DJIGimbalErrorCallBack;
 import dji.sdk.interfaces.DJIGimbalUpdateAttitudeCallBack;
 import dji.sdk.interfaces.DJIGroundStationExecuteCallBack;
+import dji.sdk.interfaces.DJIGroundStationExecutionPushInfoCallBack;
+import dji.sdk.interfaces.DJIMcuUpdateStateCallBack;
 import dji.sdk.interfaces.DJIReceivedVideoDataCallBack;
 import dji.sdk.widget.DjiGLSurfaceView;
 
 public class MainActivity extends Activity implements OnClickListener {
     
+	/*********************Config zone*********************/
+    private final double STITCH_IMAGE_SCALE = 0.5;  //image scaling for stitching(0.1~1)
+    private boolean isCheckCaptureImageFailure = false;  //check dji camera capture failure count
+    private boolean isCheckDownloadImageFailure = false;  //check dji download image failure count
+    private boolean isDIsableDJIVideoPreviewDuringStitching = true;  //disable dji video preview during stitching to reduce cpu and memory usage
+    private boolean isPhantom3UseJoystick = true;  //true:use joystick;false:use waypoint action.we have two example to rotate phantom yaw and take picture 360 degrees
+    /*********************Config zone*********************/
+	
 	//Load jni library
 	static
 	{
@@ -86,13 +104,13 @@ public class MainActivity extends Activity implements OnClickListener {
 	private DJIGimbalErrorCallBack mGimbalErrorCallBack;
 	private DJICameraPlayBackStateCallBack mCameraPlayBackStateCallBack;  //to get current selected picture count
 	private DJIBatteryUpdateInfoCallBack mBattryUpdateInfoCallBack;
-	private DJIGimbalCapacity mDjiGimbalCapacity;  //BUG:return null in DJI SDK v2.0.1
+	private DJIGimbalCapacity mDjiGimbalCapacity;  //BUG:return null in DJI SDK v2.1.0
+	private DJIMcuUpdateStateCallBack mDjiMcuUpdateStateCallBack;
+	private DJIGroundStationExecutionPushInfoCallBack mDjiGroundStationExecutionPushInfoCallBack;
+	private double droneAltitude=0.0;  //drone altitude
+	private double droneLocationLatitude = 0.0,droneLocationLongitude = 0.0;  //drone gps data
 	//Others
     private final int CAPTURE_IMAGE_NUMBER = 8;  //image number for stitching
-    private final double STITCH_IMAGE_SCALE = 0.5;  //image scaling for stitching
-    private boolean isCheckCaptureImageFailure = false;  //check dji camera capture result
-    private boolean isCheckDownloadImageFailure = false;  //check dji download image result
-    private boolean isDIsableDJIVideoPreviewDuringStitching = true;  //disable dji video preview during stitching to save cpu and memory usage
     private final int CAPTURE_IMAGE_GIMBAL_INIT_POSITION = -2300;  //-2300 for inspire1
     private final int HANDLER_SHOW_COMMON_MESSAGE =                   1000;
     private final int HANDLER_SET_STITCHING_BUTTON_TEXT =             1001;
@@ -103,17 +121,18 @@ public class MainActivity extends Activity implements OnClickListener {
     private final int HANDLER_SHOW_STITCHING_RESULT_IMAGEVIEW =       1006;
     private final int HANDLER_INSPIRE1_CAPTURE_IMAGES =               2000;
     private final int HANDLER_PHANTOM3PROFESSIONAL_CAPTURE_IMAGES =   2001;
-    private final int HANDLER_SET_DJI_CAMERA_CAPTURE_MODE =           2002;
-    private final int HANDLER_SET_DJI_CAMERA_PALYBACK_MODE =          2003;
-    private final int HANDLER_SET_DJI_CAMERA_MULTI_PREVIEW_MODE =     2004;
-    private final int HANDLER_SET_DJI_CAMERA_MULTI_EDIT_MODE =        2005;
-    private final int HANDLER_SET_DJI_CAMERA_SELECT_PAGE =            2006;
-    private final int HANDLER_SET_DJI_CAMERA_PREVIOUS_PAGE =          2007;
-    private final int HANDLER_SET_DJI_CAMERA_SELECT_FILE_AT_INDEX =   2008;
-    private final int HANDLER_SET_DJI_CAMERA_DOWNLOAD_SELECTED =      2009;
-    private final int HANDLER_SET_DJI_CAMERA_FINISH_DOWNLOAD_FILES =  2010;
-    private final int HANDLER_ENABLE_DJI_VIDEO_PREVIEW =              2011;
-    private final int HANDLER_DISABLE_DJI_VIDEO_PREVIEW =             2012;
+    private final int HANDLER_PHANTOM3PROFESSIONAL_WA_CAPTURE_IMAGES =2002;  //V1.1.0 new feature,use Groundstaion waypoint action to take picture
+    private final int HANDLER_SET_DJI_CAMERA_CAPTURE_MODE =           2003;
+    private final int HANDLER_SET_DJI_CAMERA_PALYBACK_MODE =          2004;
+    private final int HANDLER_SET_DJI_CAMERA_MULTI_PREVIEW_MODE =     2005;
+    private final int HANDLER_SET_DJI_CAMERA_MULTI_EDIT_MODE =        2006;
+    private final int HANDLER_SET_DJI_CAMERA_SELECT_PAGE =            2007;
+    private final int HANDLER_SET_DJI_CAMERA_PREVIOUS_PAGE =          2008;
+    private final int HANDLER_SET_DJI_CAMERA_SELECT_FILE_AT_INDEX =   2009;
+    private final int HANDLER_SET_DJI_CAMERA_DOWNLOAD_SELECTED =      2010;
+    private final int HANDLER_SET_DJI_CAMERA_FINISH_DOWNLOAD_FILES =  2011;
+    private final int HANDLER_ENABLE_DJI_VIDEO_PREVIEW =              2012;
+    private final int HANDLER_DISABLE_DJI_VIDEO_PREVIEW =             2013;
     private int numbersOfSelected = 0;  //update from mCameraPlayBackStateCallBack
     private int captureImageFailedCount = 0;
     private int downloadImageFailedCount = 0;
@@ -217,7 +236,15 @@ public class MainActivity extends Activity implements OnClickListener {
             }
             else if(mDroneType==DJIDroneType.DJIDrone_Phantom3_Professional)
             {
-                handler.sendMessage(handler.obtainMessage(HANDLER_PHANTOM3PROFESSIONAL_CAPTURE_IMAGES,""));
+            	//we have two example:joystick and waypoint action
+            	if(isPhantom3UseJoystick==true)
+            	{
+            		handler.sendMessage(handler.obtainMessage(HANDLER_PHANTOM3PROFESSIONAL_CAPTURE_IMAGES,""));
+            	}
+            	else
+            	{
+                    handler.sendMessage(handler.obtainMessage(HANDLER_PHANTOM3PROFESSIONAL_WA_CAPTURE_IMAGES,""));
+            	}
             }
             else
             {
@@ -489,7 +516,7 @@ public class MainActivity extends Activity implements OnClickListener {
                             public void onResult(GroundStationResult result)
                             {
                                 handler.sendMessage(handler.obtainMessage(HANDLER_SHOW_COMMON_MESSAGE, result.toString()));
-                                if(result==GroundStationResult.GS_Result_Successed)
+                                if(result==GroundStationResult.GS_Result_Success)
                                 {
                                     isGroundstationOpenSuccess=true;
                                 }
@@ -667,6 +694,159 @@ public class MainActivity extends Activity implements OnClickListener {
                             }
                             //show dialog
                             handler.sendMessage(handler.obtainMessage(HANDLER_SHOW_STITCHING_OR_NOT_DIALOG, ""));
+                        }
+                    }
+                }.start();
+                break;
+            }
+            case HANDLER_PHANTOM3PROFESSIONAL_WA_CAPTURE_IMAGES:
+            {
+            	//use waypoint action
+                new Thread()
+                {
+                    public void run()
+                    {
+                        isGroundstationOpenSuccess=false;
+                        DJIDrone.getDjiGroundStation().openGroundStation(new DJIGroundStationExecuteCallBack()
+                        {
+                            @Override
+                            public void onResult(GroundStationResult result)
+                            {
+                                handler.sendMessage(handler.obtainMessage(HANDLER_SHOW_COMMON_MESSAGE, result.toString()));
+                                if(result==GroundStationResult.GS_Result_Success)
+                                {
+                                    isGroundstationOpenSuccess=true;
+                                }
+                            }
+                        });
+                        try
+                        {
+                            sleep(3000);
+                        }
+                        catch(InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        if(isGroundstationOpenSuccess==false)
+                        {
+                            handler.sendMessage(handler.obtainMessage(HANDLER_SET_STITCHING_BUTTON_TEXT,getString(R.string.one_key_panorama)));
+                            handler.sendMessage(handler.obtainMessage(HANDLER_ENABLE_STITCHING_BUTTON,""));
+                            return;
+                        }
+                        showCommonMessage(getString(R.string.groundstation_take_control));
+                        try
+                        {
+                            sleep(3000);
+                        }
+                        catch(InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        showCommonMessage("Uploading GroundStation Task...");
+                        DJIDrone.getDjiGroundStation().setHorizontalControlCoordinateSystem(DJINavigationFlightControlCoordinateSystem.Navigation_Flight_Control_Coordinate_System_Body);
+                		//NOTE:new version sdk V2.3.0 need at least two waypoint;one waypoint no more than 16 action,largest is 15
+                        //this waypoint use to init drone yaw to 0
+                		DJIGroundStationWaypoint waypoint1=new DJIGroundStationWaypoint(droneLocationLatitude, droneLocationLongitude);
+                		waypoint1.altitude=(float)droneAltitude+0.1f;  //the unit is meter  //why add 0.1,see this bug:http://forum.dji.com/thread-28359-1-1.html
+                		waypoint1.action.actionRepeat=1;
+                		waypoint1.hasAction = true;
+                		waypoint1.heading = 0;
+                		waypoint1.actionTimeout = 60*10;  //The unit is s
+                		waypoint1.turnMode = 1;
+                		waypoint1.dampingDistance = 0.5f;
+                		waypoint1.addAction(GroundStationOnWayPointAction.Way_Point_Action_Craft_Yaw, 0);
+                        //this waypoint use to rotate drone yaw and take picture
+                		DJIGroundStationWaypoint waypoint2=new DJIGroundStationWaypoint(droneLocationLatitude, droneLocationLongitude);
+                		waypoint2.altitude=(float)droneAltitude+0.2f;  //the unit is meter
+                		waypoint2.action.actionRepeat=1;
+                		waypoint2.hasAction = true;
+                		waypoint2.heading = 0;
+                		waypoint2.actionTimeout = 60*10;  //The unit is s
+                		waypoint2.turnMode = 1;
+                		waypoint2.dampingDistance = 0.5f;
+                		for(int i=0;i<180;i+=(360/CAPTURE_IMAGE_NUMBER))
+                		{
+                			//ignore first yaw position 0,because we only have max 15 action,so bad
+                			if(i!=0)
+                			{
+                				waypoint2.addAction(GroundStationOnWayPointAction.Way_Point_Action_Craft_Yaw, i);
+                			}
+                			waypoint2.addAction(GroundStationOnWayPointAction.Way_Point_Action_Simple_Shot, 1);
+                		}
+                		for(int i=-180;i<0;i+=(360/CAPTURE_IMAGE_NUMBER))
+                		{
+                			waypoint2.addAction(GroundStationOnWayPointAction.Way_Point_Action_Craft_Yaw, i);
+                			waypoint2.addAction(GroundStationOnWayPointAction.Way_Point_Action_Simple_Shot, 1);
+                		}
+                		//this waypoint use to reset drone yaw position to 0
+                		DJIGroundStationWaypoint waypoint3=new DJIGroundStationWaypoint(droneLocationLatitude, droneLocationLongitude);
+                		waypoint3.altitude=(float)droneAltitude+0.3f;  //the unit is meter
+                		waypoint3.action.actionRepeat=1;
+                		waypoint3.hasAction = true;
+                		waypoint3.heading = 0;
+                		waypoint3.actionTimeout = 60*10;  //The unit is s
+                		waypoint3.turnMode = 1;
+                		waypoint3.dampingDistance = 0.5f;
+                		waypoint3.addAction(GroundStationOnWayPointAction.Way_Point_Action_Craft_Yaw, 0);  //reset drone yaw to 0
+                		//generate gs task
+                		DJIGroundStationTask task=new DJIGroundStationTask();
+                		task.addWaypoint(waypoint1);
+                		task.addWaypoint(waypoint2);
+                		task.addWaypoint(waypoint3);
+                		task.finishAction=DJIGroundStationFinishAction.None;
+                		//upload gs task to drone
+                		DJIDrone.getDjiGroundStation().uploadGroundStationTask(task, new DJIGroundStationExecuteCallBack()
+                		{
+                			@Override
+                			public void onResult(GroundStationResult result)
+                			{
+                				if(result==GroundStationResult.GS_Result_Success)
+                				{
+                					showCommonMessage("Upload GroundStation Task success");
+                				}
+                				else
+                				{
+                					showCommonMessage("Upload GroundStation Task failed:"+result.toString());
+                                    handler.sendMessage(handler.obtainMessage(HANDLER_SET_STITCHING_BUTTON_TEXT,getString(R.string.one_key_panorama)));
+                                    handler.sendMessage(handler.obtainMessage(HANDLER_ENABLE_STITCHING_BUTTON,""));
+                                    return;
+                				}
+                			}
+                		});
+                        try
+                        {
+                            sleep(5000);
+                        }
+                        catch(InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        //start gs task
+        				DJIDrone.getDjiGroundStation().startGroundStationTask(new DJIGroundStationExecuteCallBack()
+        				{
+        					@Override
+        					public void onResult(GroundStationResult result)
+        					{
+        						if(result==GroundStationResult.GS_Result_Success)
+        						{
+        							showCommonMessage("Start GroundStation Task success");
+        						}
+        						else
+        						{
+        							showCommonMessage("Start GroundStation Task failed:"+result.toString());
+                                    handler.sendMessage(handler.obtainMessage(HANDLER_SET_STITCHING_BUTTON_TEXT,getString(R.string.one_key_panorama)));
+                                    handler.sendMessage(handler.obtainMessage(HANDLER_ENABLE_STITCHING_BUTTON,""));
+                                    return;
+        						}
+        					}
+        				});
+                        try
+                        {
+                            sleep(3000);
+                        }
+                        catch(InterruptedException e)
+                        {
+                            e.printStackTrace();
                         }
                     }
                 }.start();
@@ -1301,7 +1481,7 @@ public class MainActivity extends Activity implements OnClickListener {
     	startDJIAoa();
     	activateDJISDK();
         // The SDK initiation for Inspire 1 or Phantom 3 Professional.
-        DJIDrone.initWithType(this.getApplicationContext(), DJIDroneType.DJIDrone_Inspire1);  //TODO inspire1 or anything else? is it possible to auto detect?
+        DJIDrone.initWithType(this.getApplicationContext(), DJIDroneType.DJIDrone_Inspire1);  //here we use DJIDrone_Inspire1,it's compatible with Phantom 3 Professional
         DJIDrone.connectToDrone(); // Connect to the drone
     }
 	
@@ -1372,7 +1552,7 @@ public class MainActivity extends Activity implements OnClickListener {
 				mDjiGLSurfaceView.setDataToDecoder(videoBuffer, size);
 			}
 		};
-		
+		//gimbal attitude
         mGimbalUpdateAttitudeCallBack = new DJIGimbalUpdateAttitudeCallBack()
         {
             @Override
@@ -1381,7 +1561,7 @@ public class MainActivity extends Activity implements OnClickListener {
             	
             }
         };
-        
+        //gimbal error
         mGimbalErrorCallBack = new DJIGimbalErrorCallBack(){
             @Override
             public void onError(final int error)
@@ -1398,7 +1578,7 @@ public class MainActivity extends Activity implements OnClickListener {
             	}
             }    
         };
-        
+        //camera playback state
         mCameraPlayBackStateCallBack = new DJICameraPlayBackStateCallBack()
         {
             @Override
@@ -1407,7 +1587,7 @@ public class MainActivity extends Activity implements OnClickListener {
             	numbersOfSelected=mState.numbersOfSelected;
             }
         };
-        
+        //battry
         mBattryUpdateInfoCallBack = new DJIBatteryUpdateInfoCallBack(){
             @Override
             public void onResult(final DJIBatteryProperty state)
@@ -1420,16 +1600,84 @@ public class MainActivity extends Activity implements OnClickListener {
 					}
 				});
             }
-        };        
+        };
+        
+        //main controller
+        mDjiMcuUpdateStateCallBack=new DJIMcuUpdateStateCallBack()
+        {
+			@Override
+			public void onResult(DJIMainControllerSystemState state)
+			{
+				droneAltitude=state.altitude;
+				droneLocationLatitude=state.droneLocationLatitude;
+				droneLocationLongitude=state.droneLocationLongitude;
+			}
+		};
+		//gs execute info
+		mDjiGroundStationExecutionPushInfoCallBack=new DJIGroundStationExecutionPushInfoCallBack()
+		{
+			@Override
+			public void onResult(final DJIGroundStationExecutionPushInfo info)
+			{
+				showCommonMessage(info.eventType.toString());
+				//gs task finished
+				if(info.eventType==GroundStationExecutionPushType.Navi_Mission_Finish)
+				{
+                    //close groundstation
+                    DJIDrone.getDjiGroundStation().closeGroundStation(new DJIGroundStationExecuteCallBack()
+                    {
+                        @Override
+                        public void onResult(GroundStationResult result)
+                        {
+                            handler.sendMessage(handler.obtainMessage(HANDLER_SHOW_COMMON_MESSAGE, result.toString()));
+                        }
+                    });
+                    showCommonMessage(getString(R.string.capture_image_complete));
+                    try
+                    {
+                        Thread.sleep(3000);
+                    }
+                    catch(InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    if(captureImageFailedCount!=0)
+                    {
+                        showCommonMessage("Check "+captureImageFailedCount+" images capture failed,Task Abort!");
+                        captureImageFailedCount=0;
+                        handler.sendMessage(handler.obtainMessage(HANDLER_SET_STITCHING_BUTTON_TEXT,getString(R.string.one_key_panorama)));
+                        handler.sendMessage(handler.obtainMessage(HANDLER_ENABLE_STITCHING_BUTTON,""));
+                    }
+                    else
+                    {
+                        showCommonMessage("Check "+CAPTURE_IMAGE_NUMBER+" images capture all success,continue....");
+                        try
+                        {
+                            Thread.sleep(3000);
+                        }
+                        catch (InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        //show dialog
+                        handler.sendMessage(handler.obtainMessage(HANDLER_SHOW_STITCHING_OR_NOT_DIALOG, ""));
+                    }
+				}
+			}
+		};
         
 		DJIDrone.getDjiCamera().setReceivedVideoDataCallBack(mReceivedVideoDataCallBack);
         DJIDrone.getDjiGimbal().setGimbalUpdateAttitudeCallBack(mGimbalUpdateAttitudeCallBack);
         DJIDrone.getDjiGimbal().setGimbalErrorCallBack(mGimbalErrorCallBack);
         DJIDrone.getDjiCamera().setDJICameraPlayBackStateCallBack(mCameraPlayBackStateCallBack);
         DJIDrone.getDjiBattery().setBatteryUpdateInfoCallBack(mBattryUpdateInfoCallBack);
+        DJIDrone.getDjiMainController().setMcuUpdateStateCallBack(mDjiMcuUpdateStateCallBack);
+        DJIDrone.getDjiGroundStation().setGroundStationExecutionPushInfoCallBack(mDjiGroundStationExecutionPushInfoCallBack);
         
         DJIDrone.getDjiGimbal().startUpdateTimer(1000);
         DJIDrone.getDjiBattery().startUpdateTimer(2000);
+        DJIDrone.getDjiMainController().startUpdateTimer(1000);
+        DJIDrone.getDjiGroundStation().startUpdateTimer(1000);
 	}
     
 	//destroy DJI camera
@@ -1443,9 +1691,13 @@ public class MainActivity extends Activity implements OnClickListener {
             DJIDrone.getDjiGimbal().setGimbalUpdateAttitudeCallBack(null);
             DJIDrone.getDjiGimbal().setGimbalErrorCallBack(null);
             DJIDrone.getDjiBattery().setBatteryUpdateInfoCallBack(null);
+            DJIDrone.getDjiMainController().setMcuUpdateStateCallBack(null);
+            DJIDrone.getDjiGroundStation().setGroundStationExecutionPushInfoCallBack(null);
             
             DJIDrone.getDjiGimbal().stopUpdateTimer();
             DJIDrone.getDjiBattery().stopUpdateTimer();
+            DJIDrone.getDjiMainController().stopUpdateTimer();
+            DJIDrone.getDjiGroundStation().stopUpdateTimer();
 		}
 	}
 	

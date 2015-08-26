@@ -1,6 +1,6 @@
 /*
- * An Android Panorama demo for DJI Inspire1 and Phantom 3 Professional using DJI SDK and OpenCV Lib
- * Develop environment:jdk 8u45 + eclipse mars + ADT 23.0.6 + ndk r10e + cdt8.7.0 + cygwin2.1.0 + OpenCV2.4.11 + DJI SDK 2.1.0
+ * An Android Panorama demo for DJI Inspire1 and Phantom 3 Professional using DJI SDK and OpenCV
+ * Develop environment:jdk 8u45 + eclipse mars + ADT 23.0.6 + ndk r10e + cdt8.7.0 + cygwin2.1.0 + OpenCV2.4.11 + DJI SDK 2.3.0
  */
 #include <jni.h>
 #include <stdio.h>
