@@ -91,7 +91,6 @@ public class MainActivity extends Activity implements OnClickListener {
 	public native int jnistitching(String[] source,String result,double scale);  //jni stitching
 	//Environment
 	private static final String TAG = "PanoDemoMainActivity";  //debug TAG
-    private final String DOWNLOAD_IMAGE_DIRECTORY = "PanoDemo";  //download images from air cache directroy(use in downloadAllSelectedFiles function)
 	private final String STITCHING_SOURCE_IMAGES_DIRECTORY = Environment.getExternalStorageDirectory().getPath()+"/PanoDemo/";  //path:/storage/emulated/0/OpenCV_Panorama_Images/
 	private final String STITCHING_RESULT_IMAGES_DIRECTORY = Environment.getExternalStorageDirectory().getPath()+"/PanoDemo/result/";  //path:/storage/emulated/0/OpenCV_Panorama_Images/result/
 	private final int COMMON_MESSAGE_DURATION_TIME = 2500;  //in milliseconds
@@ -1114,7 +1113,7 @@ public class MainActivity extends Activity implements OnClickListener {
             case HANDLER_SET_DJI_CAMERA_DOWNLOAD_SELECTED:
             {
                 //download file
-            	File downloadPath=new File(DOWNLOAD_IMAGE_DIRECTORY);
+            	File downloadPath=new File(STITCHING_SOURCE_IMAGES_DIRECTORY);
                 DJIDrone.getDjiCamera().downloadAllSelectedFiles(downloadPath,new DJIFileDownloadCallBack()
                 {
                     @Override
