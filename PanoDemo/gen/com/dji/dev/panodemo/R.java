@@ -87,32 +87,33 @@ containing a value of this type.
         public static final int icon_panorama=0x7f020004;
         public static final int radio_checked=0x7f020005;
         public static final int radio_unchecked=0x7f020006;
-        public static final int start_blue=0x7f020007;
-        public static final int start_gray=0x7f020008;
-        public static final int start_green=0x7f020009;
     }
     public static final class id {
-        public static final int action_settings=0x7f0c0014;
+        public static final int action_settings=0x7f0c0018;
+        public static final int altitude_textView=0x7f0c0012;
         public static final int any=0x7f0c0004;
         public static final int back=0x7f0c0005;
-        public static final int batteryTextView=0x7f0c000e;
+        public static final int battery_textView=0x7f0c000b;
         public static final int bold=0x7f0c0000;
-        public static final int centerLinearLayout=0x7f0c0009;
-        public static final int commonMessageTextView=0x7f0c000b;
+        public static final int common_message_textView=0x7f0c000c;
+        public static final int connect_state_textView=0x7f0c000a;
         public static final int demi=0x7f0c0001;
+        public static final int distance_textView=0x7f0c0011;
         public static final int front=0x7f0c0006;
-        public static final int log_dlg_content=0x7f0c0012;
-        public static final int log_dlg_control=0x7f0c000f;
-        public static final int log_dlg_lock=0x7f0c0010;
-        public static final int log_dlg_rg=0x7f0c0013;
-        public static final int log_dlg_scroll=0x7f0c0011;
+        public static final int horizontal_speed_textView=0x7f0c000f;
+        public static final int log_dlg_content=0x7f0c0016;
+        public static final int log_dlg_control=0x7f0c0013;
+        public static final int log_dlg_lock=0x7f0c0014;
+        public static final int log_dlg_rg=0x7f0c0017;
+        public static final int log_dlg_scroll=0x7f0c0015;
         public static final int mDjiSurfaceView=0x7f0c0008;
         public static final int mRelativeLayout=0x7f0c0007;
         public static final int nbold=0x7f0c0002;
         public static final int nlight=0x7f0c0003;
-        public static final int startButton=0x7f0c000a;
-        public static final int stitchingButton=0x7f0c000c;
-        public static final int testButton=0x7f0c000d;
+        public static final int panorama_button=0x7f0c000d;
+        public static final int satellite_textView=0x7f0c0009;
+        public static final int test_button=0x7f0c000e;
+        public static final int vertical_speed_textView=0x7f0c0010;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -197,27 +198,37 @@ containing a value of this type.
         public static final int ErrorDetailCheckPermissionServerUnknown=0x7f08003c;
         public static final int ErrorDetailCheckPermissionServerWriteError=0x7f080036;
         public static final int ErrorDetailCheckPermissionUnsportAesEncrypt=0x7f080039;
-        public static final int action_settings=0x7f080041;
+        public static final int action_settings=0x7f080040;
+        public static final int altitude=0x7f080047;
         /**  Application 
          */
         public static final int app_name=0x7f08003f;
-        public static final int battery=0x7f08004c;
-        public static final int capture_image_complete=0x7f08004a;
-        public static final int capturing_image=0x7f080049;
-        public static final int commonMessageString=0x7f080045;
-        /**  UI 
+        public static final int battery=0x7f080043;
+        public static final int capture_image_complete=0x7f080051;
+        public static final int capturing_image=0x7f080050;
+        public static final int common_message=0x7f080044;
+        public static final int connect_state=0x7f080042;
+        public static final int connected=0x7f080055;
+        public static final int disconnected=0x7f080056;
+        public static final int distance=0x7f080048;
+        /**  UI dynamic 
          */
-        public static final int dji_sdk_activate_error=0x7f080042;
-        public static final int downloading=0x7f08004b;
-        public static final int groundstation_take_control=0x7f080046;
-        public static final int hello_world=0x7f080040;
-        public static final int init_gimabal_yaw=0x7f080047;
-        public static final int one_key_panorama=0x7f080044;
-        public static final int pressAgainExitString=0x7f08004d;
-        public static final int stitching=0x7f080043;
-        public static final int test=0x7f080048;
-        public static final int unsupported_drone=0x7f08004e;
-        public static final int video_preview_disabled_during_stitching=0x7f08004f;
+        public static final int dji_sdk_activate_error=0x7f08004b;
+        public static final int downloading=0x7f080052;
+        public static final int groundstation_take_control=0x7f08004e;
+        public static final int horizontal_speed=0x7f08004a;
+        public static final int init_gimabal_yaw=0x7f08004f;
+        public static final int not_applicable=0x7f080057;
+        public static final int one_key_panorama=0x7f08004d;
+        public static final int panorama=0x7f080046;
+        public static final int press_again_to_exit=0x7f080054;
+        /**  UI init 
+         */
+        public static final int satellite=0x7f080041;
+        public static final int test=0x7f080045;
+        public static final int unsupported_drone=0x7f08004c;
+        public static final int vertical_speed=0x7f080049;
+        public static final int video_preview_disabled_during_stitching=0x7f080053;
     }
     public static final class style {
         /** 

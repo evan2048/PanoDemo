@@ -11,56 +11,106 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <LinearLayout
-        android:id="@+id/centerLinearLayout"
+    <TextView
+        android:id="@+id/satellite_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:orientation="vertical" >
-
-        <Button
-            android:id="@+id/startButton"
-            android:layout_width="80dp"
-            android:layout_height="75dp"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/start_gray" />
-    </LinearLayout>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/satellite"
+        android:textColor="@android:color/white" />
 
     <TextView
-        android:id="@+id/commonMessageTextView"
+        android:id="@+id/connect_state_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:text="@string/connect_state"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/battery_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/battery"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/common_message_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/connect_state_textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
         android:gravity="center_horizontal"
-        android:text="@string/commonMessageString"
+        android:text="@string/common_message"
         android:textColor="@android:color/white" />
 
     <Button
-        android:id="@+id/stitchingButton"
+        android:id="@+id/panorama_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="@string/stitching" />
+        android:text="@string/panorama" />
 
     <Button
-        android:id="@+id/testButton"
+        android:id="@+id/test_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/stitchingButton"
+        android:layout_above="@id/panorama_button"
         android:layout_centerHorizontal="true"
         android:text="@string/test" />
 
     <TextView
-        android:id="@+id/batteryTextView"
+        android:id="@+id/horizontal_speed_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:text="@string/battery"
+        android:text="@string/horizontal_speed"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/vertical_speed_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/horizontal_speed_textView"
+        android:layout_toStartOf="@id/horizontal_speed_textView"
+        android:text="@string/vertical_speed"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/distance_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/vertical_speed_textView"
+        android:layout_toStartOf="@id/vertical_speed_textView"
+        android:text="@string/distance"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/altitude_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/distance_textView"
+        android:layout_toStartOf="@id/distance_textView"
+        android:text="@string/altitude"
         android:textColor="@android:color/white" />
 
 </RelativeLayout>

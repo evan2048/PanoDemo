@@ -1,3 +1,10 @@
+/*
+ * An Android Panorama demo for DJI Inspire1 and Phantom 3 Professional using DJI SDK and OpenCV
+ * Develop environment:jdk 8u45 + eclipse mars + ADT 23.0.6 + ndk r10e + cdt8.7.0 + cygwin2.1.0 + OpenCV2.4.11 + DJI SDK 2.3.0
+ * Author:evan.gu
+ * Update date:2015.9.21
+ */
+
 package com.dji.dev.util;
 
 import java.io.BufferedReader;
@@ -7,6 +14,7 @@ import java.io.IOException;
 import android.app.ActivityManager;
 import android.content.Context;
 
+//get android device memory info
 public class MemInfo {
     // get available mem
     public static long getmem_UNUSED(Context mContext)
